@@ -74,10 +74,10 @@ $display_success = $success_messages[$msg] ?? '';
     <!-- ── Split Hero Layout ── -->
     <main style="display: flex; flex-wrap: wrap; min-height: 100vh; padding-top: 72px;">
         
-        <!-- Left: Cinematic Scrolling Film (58%) 
-        <section class="hide-mobile" style="flex: 0 0 58%; max-width: 58%; height: calc(100vh - 72px); sticky: top 72px; background: #000000; overflow: hidden; position: sticky; top: 72px;">
+        <!-- Left: Cinematic Scrolling Film (58%) -->
+        <section class="hide-mobile" style="flex: 0 0 58%; max-width: 58%; height: calc(100vh - 72px); background: #000000; overflow: hidden; position: sticky; top: 72px;">
             <div id="hero-film-container" style="width: 100%; height: 100%;"></div>
-        </section>-->
+        </section>
 
         <!-- Right: Auth Login Interface (42% desktop, 100% mobile) -->
         <section style="flex: 1 1 42%; max-width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--sp-12) var(--sp-6); background: var(--clr-surface); min-height: calc(100vh - 72px);">
@@ -142,8 +142,11 @@ $display_success = $success_messages[$msg] ?? '';
                     Don't have an account? <a href="/register.php" style="font-weight: 600;">Register here</a>
                 </div>
 
-                <div style="margin-top: var(--sp-8); border-top: 1px solid var(--clr-border-light); padding-top: var(--sp-4); text-align: center;">
-                    <p style="font-size: 0.8125rem; color: var(--clr-text-muted);">ALMS is a product of the Federal College of Animal Health & Production Technology, Ibadan. For support, contact <a href="mailto:
+                <div style="margin-top: var(--sp-8); border-top: 1px solid var(--clr-border-light); padding-top: var(--sp-4); text-align: center; display: flex; flex-direction: column; gap: var(--sp-2);">
+                    <p style="font-size: 0.8125rem; color: var(--clr-text-muted); margin-bottom: 0;">ALMS is a product of the Federal College of Animal Health & Production Technology, Ibadan. For support, contact <a href="mailto:support@fcahptib.edu.ng">support@fcahptib.edu.ng</a>.</p>
+                    <div>
+                        <a href="/admin/login.php" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--clr-text-muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Administrator Secure Entrance</a>
+                    </div>
                 </div>
             </div>
         </section>

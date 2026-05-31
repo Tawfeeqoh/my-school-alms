@@ -4,7 +4,7 @@
 // InfinityFree / cPanel compatible
 // ============================================================
 
-define('DB_HOST', 'sql102.infinityfree.comur InfinityFree MySQL host
+define('DB_HOST', 'sql102.infinityfree.com'); // ← InfinityFree MySQL host
 define('DB_NAME', 'if0_41958528_fcahptibalms'); // ← your DB name from the schema
 define('DB_USER', 'if0_41958528');                // ← your cPanel DB username
 define('DB_PASS', 'qH4OLN9mHQ');                            // ← your cPanel DB password

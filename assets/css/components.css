@@ -522,3 +522,79 @@
   z-index: 9999;
   animation: confetti 2.5s linear forwards;
 }
+
+/* ── Visual Experience Upgrades ───────────────────────── */
+
+/* Scroll-Aware Intersection Reveals */
+.reveal-element {
+  opacity: 0;
+  transform: translateY(35px) scale(0.96) rotateX(8deg);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  will-change: transform, opacity;
+}
+.reveal-element.reveal-active {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotateX(0deg);
+}
+
+/* Scaling Reveal variant */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.88);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  will-change: transform, opacity;
+}
+.reveal-scale.reveal-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Fade Reveal variant */
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  will-change: opacity;
+}
+.reveal-fade.reveal-active {
+  opacity: 1;
+}
+
+/* 3D Glassmorphic Mouse Tilt Effect */
+.tilt-card {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+  will-change: transform;
+  position: relative;
+}
+.tilt-inner {
+  transform: translateZ(30px);
+  transform-style: preserve-3d;
+}
+.card-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 255, 255, 0.18) 0%, transparent 60%);
+  z-index: 10;
+  mix-blend-mode: overlay;
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 0.3s ease;
+}
+
+/* Reading Progress Bar (Scroll-Driven) */
+.scroll-progress-bar {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, var(--clr-primary), #FF4545, var(--clr-primary));
+  background-size: 200% 100%;
+  z-index: 999;
+  width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: 0 1px 8px var(--clr-primary-glow);
+  animation: shimmer 2s infinite linear;
+}
+

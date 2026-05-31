@@ -147,4 +147,98 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchNotifications();
         setInterval(fetchNotifications, 60000);
     }
+
+    // ── Visual Experience Engine (Scroll Reveals, 3D Tilts, Reading Progress) ──
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+        // A. IntersectionObserver Scroll Reveals
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-active');
+                    observer.unobserve(entry.target); // Trigger once
+                }
+            });
+        }, revealOptions);
+
+        // Auto-apply reveal elements dynamically
+        const revealSelectors = [
+            '.card-elevated', 
+            '.glass-card-strong', 
+            '.dashboard-widget', 
+            '#stats div', 
+            '.role-card',
+            '.course-card'
+        ];
+
+        document.querySelectorAll(revealSelectors.join(', ')).forEach(el => {
+            el.classList.add('reveal-element');
+            revealObserver.observe(el);
+        });
+
+        // Manual reveal-element hooks
+        document.querySelectorAll('.reveal-element, .reveal-scale, .reveal-fade').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // B. 3D Glassmorphic Mouse Tilt Effect
+        const tiltTargets = document.querySelectorAll('.tilt-card, .glass-card-strong, .role-card, .course-card, .stat-card');
+        
+        tiltTargets.forEach(card => {
+            card.classList.add('tilt-card');
+            
+            // Append Glossy glare shine layer
+            if (!card.querySelector('.card-shine')) {
+                const shine = document.createElement('div');
+                shine.className = 'card-shine';
+                card.appendChild(shine);
+            }
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((centerY - y) / centerY) * 9; // Limit rotation to max 9deg
+                const rotateY = ((x - centerX) / centerX) * 9; 
+                
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
+                card.style.setProperty('--shine-x', `${(x / rect.width) * 100}%`);
+                card.style.setProperty('--shine-y', `${(y / rect.height) * 100}%`);
+                card.style.setProperty('--shine-opacity', '1');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0) scale(1)';
+                card.style.setProperty('--shine-opacity', '0');
+            });
+        });
+
+        // C. Scroll-Driven Reading Progress Bar
+        const longPageSelectors = ['student/lesson.php', 'student/dashboard.php', 'lecturer/dashboard.php'];
+        const isLongPage = longPageSelectors.some(sel => window.location.pathname.includes(sel));
+        
+        if (isLongPage || document.documentElement.scrollHeight > window.innerHeight * 1.5) {
+            const progressBar = document.createElement('div');
+            progressBar.className = 'scroll-progress-bar';
+            document.body.appendChild(progressBar);
+
+            window.addEventListener('scroll', () => {
+                const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (scrollHeight > 0) {
+                    const progressPercent = (window.scrollY / scrollHeight) * 100;
+                    progressBar.style.width = `${progressPercent}%`;
+                }
+            });
+        }
+    }
 });

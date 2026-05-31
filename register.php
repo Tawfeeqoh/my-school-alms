@@ -72,6 +72,7 @@ if ($error === 'matric_not_authorized') {
     </style>
 </head>
 <body class="film-grain" style="background: var(--clr-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: var(--sp-6);">
+    <canvas id="synapse-canvas" style="position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.55;"></canvas>
 
     <div class="glass-card-strong w-full" style="max-width: 540px;">
         <div style="text-align: center; margin-bottom: var(--sp-6);">
@@ -194,7 +195,7 @@ if ($error === 'matric_not_authorized') {
                         </div>
                         <div class="input-group">
                             <label for="l-email">Email</label>
-                            <input type="email" id="l-email" name="email" placeholder="t.adegoke@gmail.cominput-field">
+                            <input type="email" id="l-email" name="email" placeholder="t.adegoke@gmail.com" class="input-field">
                         </div>
                     </div>
                 </div>
@@ -417,6 +418,96 @@ if ($error === 'matric_not_authorized') {
                 }
                 strengthMeter.setAttribute('data-strength', strength);
             });
+        }
+
+        // ── Organic Connected Synapses Background Canvas ──
+        const synapseCanvas = document.getElementById('synapse-canvas');
+        if (synapseCanvas) {
+            const ctx = synapseCanvas.getContext('2d');
+            let nodes = [];
+            const nodeCount = 45;
+            const maxDistance = 110;
+            let mouseX = -1000;
+            let mouseY = -1000;
+
+            function resizeSynapseCanvas() {
+                synapseCanvas.width = window.innerWidth;
+                synapseCanvas.height = window.innerHeight;
+            }
+            resizeSynapseCanvas();
+            window.addEventListener('resize', resizeSynapseCanvas);
+
+            class SynapseNode {
+                constructor() {
+                    this.x = Math.random() * synapseCanvas.width;
+                    this.y = Math.random() * synapseCanvas.height;
+                    this.vx = (Math.random() * 0.6 - 0.3);
+                    this.vy = (Math.random() * 0.6 - 0.3);
+                    this.radius = Math.random() * 2 + 1.2;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > synapseCanvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > synapseCanvas.height) this.vy *= -1;
+
+                    // Subtle mouse pull
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        this.x += dx * 0.008;
+                        this.y += dy * 0.008;
+                    }
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(209, 0, 0, 0.3)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < nodeCount; i++) {
+                nodes.push(new SynapseNode());
+            }
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouseX = -1000;
+                mouseY = -1000;
+            });
+
+            function animateSynapse() {
+                ctx.clearRect(0, 0, synapseCanvas.width, synapseCanvas.height);
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    nodes[i].update();
+                    nodes[i].draw();
+
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < maxDistance) {
+                            const opacity = (1 - (dist / maxDistance)) * 0.22;
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.strokeStyle = `rgba(209, 0, 0, ${opacity})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animateSynapse);
+            }
+            animateSynapse();
         }
     </script>
 </body>
