@@ -2,27 +2,25 @@
 // ============================================================
 // ALMS — Student Wellness Metrics Save Endpoint
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
 // Read JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $attention = strtolower(trim($input['attention_span'] ?? 'medium'));
 $stress = strtolower(trim($input['stress_level'] ?? 'low'));
 
 // Validate
 if (!in_array($attention, ['low', 'medium', 'high'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid attention span level.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid attention span level.'], 422);
 }
 if (!in_array($stress, ['low', 'medium', 'high'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid stress level.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid stress level.'], 422);
 }
 
 $db = db();
@@ -41,7 +39,8 @@ try {
         $_SESSION['current_pace'] = 'express';
     }
 
-    echo json_encode(['success' => true, 'message' => 'Wellness metrics logged successfully.']);
+    apiJson(['success' => true, 'message' => 'Wellness metrics logged successfully.']);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    error_log('Wellness save error: ' . $e->getMessage());
+    apiJson(['success' => false, 'message' => 'Could not save wellness metrics.'], 500);
 }

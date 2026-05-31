@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALMS - FCAH&PT Ibadan</title>
+    <meta name="description" content="A modern academic learning management system for FCAH&PT Ibadan.">
+    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="./static-frontend.css">
+</head>
+<body class="film-grain alms-static">
+    <header class="public-header">
+        <div class="container static-nav">
+            <a href="./index.html" class="static-brand">
+                <span>ALMS</span>
+                FCAH&PT Ibadan
+            </a>
+            <div class="static-nav-actions">
+                <a href="#register" class="btn btn-outline btn-sm">Create Account</a>
+                <a href="#login" class="btn btn-primary btn-sm">Sign In</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="static-hero">
+            <div class="static-hero-visual" aria-hidden="true">
+                <canvas id="learning-arc"></canvas>
+                <div class="hero-orbit hero-orbit-one">ND</div>
+                <div class="hero-orbit hero-orbit-two">HND</div>
+                <div class="hero-orbit hero-orbit-three">AI</div>
+            </div>
+            <div class="container static-hero-grid">
+                <div class="static-copy">
+                    <p class="static-eyebrow">Academic Learning Management System</p>
+                    <h1>ALMS</h1>
+                    <p class="static-lede">A premium academic operating system for learning progress, lecturer workflows, wellness-aware pacing, assessments, and AI-assisted study.</p>
+                    <div class="static-metrics" aria-label="Supported academic scope">
+                        <div><strong>11</strong><span>Departments</span></div>
+                        <div><strong>ND/HND</strong><span>Program paths</span></div>
+                        <div><strong>AI</strong><span>Study support</span></div>
+                    </div>
+                </div>
+
+                <section id="login" class="auth-panel" aria-labelledby="login-title">
+                    <h2 id="login-title">Sign In</h2>
+                    <p class="text-secondary">Access your academic command center.</p>
+                    <div id="login-alert" class="static-alert" hidden></div>
+                    <form id="login-form" class="static-form">
+                        <div class="input-group">
+                            <label for="login-email">Email</label>
+                            <input class="input-field" id="login-email" name="email" type="email" autocomplete="email" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="login-password">Password</label>
+                            <input class="input-field" id="login-password" name="password" type="password" autocomplete="current-password" required>
+                        </div>
+                        <button class="btn btn-primary btn-full" type="submit">Sign In</button>
+                    </form>
+                    <a class="static-secondary-link" data-backend-link="/forgot-password.php" href="#">Forgot password?</a>
+                </section>
+            </div>
+        </section>
+
+        <section id="register" class="container static-section" aria-labelledby="register-title">
+            <div class="static-section-head">
+                <p class="static-eyebrow">Institutional Registry</p>
+                <h2 id="register-title">Create your ALMS account</h2>
+                <p class="text-secondary">Student registrations are verified against authorized matriculation records. Lecturer accounts require administrator approval.</p>
+            </div>
+            <div class="auth-panel wide">
+                <div id="register-alert" class="static-alert" hidden></div>
+                <form id="register-form" class="static-register-grid">
+                    <div class="input-group">
+                        <label for="role">Role</label>
+                        <select class="input-field" id="role" name="role" required>
+                            <option value="student">Student</option>
+                            <option value="lecturer">Lecturer</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="first-name">First Name</label>
+                        <input class="input-field" id="first-name" name="first_name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="last-name">Last Name</label>
+                        <input class="input-field" id="last-name" name="last_name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input class="input-field" id="email" name="email" type="email" required>
+                    </div>
+                    <div class="input-group student-only">
+                        <label for="matric">Matriculation Number</label>
+                        <input class="input-field" id="matric" name="matric_number" placeholder="FCAHPT/2026/0001">
+                    </div>
+                    <div class="input-group">
+                        <label for="department">Department</label>
+                        <select class="input-field" id="department" name="department_id" required></select>
+                    </div>
+                    <div class="input-group student-only">
+                        <label for="level">Study Level</label>
+                        <select class="input-field" id="level" name="level_id">
+                            <option value="1">ND I</option>
+                            <option value="2">ND II</option>
+                            <option value="3">HND I</option>
+                            <option value="4">HND II</option>
+                        </select>
+                    </div>
+                    <div class="input-group lecturer-only" hidden>
+                        <label for="title">Academic Title</label>
+                        <select class="input-field" id="title" name="title">
+                            <option value="Mr.">Mr.</option>
+                            <option value="Mrs.">Mrs.</option>
+                            <option value="Dr.">Dr.</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Prof.">Prof.</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input class="input-field" id="password" name="password" type="password" minlength="8" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input class="input-field" id="confirm-password" name="confirm_password" type="password" minlength="8" required>
+                    </div>
+                    <button class="btn btn-primary btn-full static-submit" type="submit">Create Account</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="static-footer">
+        <div class="container">Advanced Learning Management System for Federal College of Animal Health & Production Technology, Ibadan.</div>
+    </footer>
+
+    <script src="./static-frontend.js"></script>
+</body>
+</html>

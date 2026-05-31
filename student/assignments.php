@@ -34,9 +34,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // File upload handling
         $file_path = '';
         if (isset($_FILES['assignment_file']) && $_FILES['assignment_file']['error'] === UPLOAD_ERR_OK) {
-            $fileName = basename($_FILES['assignment_file']['name']);
-            $file_path = '/uploads/assignments/' . time() . '_' . $fileName;
-            move_uploaded_file($_FILES['assignment_file']['tmp_name'], __DIR__ . '/..' . $file_path);
+            $allowedExt = ['pdf', 'doc', 'docx', 'zip', 'txt', 'png', 'jpg', 'jpeg'];
+            $maxBytes = 8 * 1024 * 1024;
+            $originalName = basename($_FILES['assignment_file']['name']);
+            $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+            if (!in_array($ext, $allowedExt, true) || $_FILES['assignment_file']['size'] > $maxBytes) {
+                redirect('/student/assignments.php?error=invalid_file');
+            }
+
+            $uploadDir = realpath(__DIR__ . '/../uploads/assignments');
+            if (!$uploadDir) {
+                redirect('/student/assignments.php?error=upload_unavailable');
+            }
+
+            $safeName = bin2hex(random_bytes(12)) . '.' . $ext;
+            $target = $uploadDir . DIRECTORY_SEPARATOR . $safeName;
+            if (!move_uploaded_file($_FILES['assignment_file']['tmp_name'], $target)) {
+                redirect('/student/assignments.php?error=upload_unavailable');
+            }
+            $file_path = '/uploads/assignments/' . $safeName;
         }
 
         if ($assignment_id > 0 && (!empty($text) || !empty($file_path))) {
@@ -97,6 +114,10 @@ $pageTitle = 'Assignments Portal';
             <div class="flash-msg error">Please enter text response or upload a file.</div>
         <?php elseif ($error === 'db_error'): ?>
             <div class="flash-msg error">Database error saving submission.</div>
+        <?php elseif ($error === 'invalid_file'): ?>
+            <div class="flash-msg error">Upload must be PDF, Word, ZIP, text, PNG, or JPG and no larger than 8 MB.</div>
+        <?php elseif ($error === 'upload_unavailable'): ?>
+            <div class="flash-msg error">File upload is unavailable. Please try again or submit a text response.</div>
         <?php endif; ?>
 
         <div style="margin-bottom: var(--sp-6);">

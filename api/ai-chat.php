@@ -2,21 +2,20 @@
 // ============================================================
 // ALMS — AI Chat Endpoint with Fallback RAG Matcher
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
 // Read JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $message = trim($input['message'] ?? '');
 
 if (empty($message)) {
-    echo json_encode(['success' => false, 'message' => 'Message is empty.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Message is empty.'], 422);
 }
 
 $db = db();
@@ -138,7 +137,7 @@ if ($stress === 'high' || $attention === 'low') {
     $response_text .= "\n\n*Take it slow today. You are doing great!*";
 }
 
-echo json_encode([
+apiJson([
     'success' => true,
     'message' => $response_text,
     'timestamp' => date('c')

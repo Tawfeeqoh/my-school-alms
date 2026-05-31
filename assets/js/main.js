@@ -187,40 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
             revealObserver.observe(el);
         });
 
-        // B. 3D Glassmorphic Mouse Tilt Effect
-        const tiltTargets = document.querySelectorAll('.tilt-card, .glass-card-strong, .role-card, .course-card, .stat-card');
-        
-        tiltTargets.forEach(card => {
-            card.classList.add('tilt-card');
-            
-            // Append Glossy glare shine layer
-            if (!card.querySelector('.card-shine')) {
-                const shine = document.createElement('div');
-                shine.className = 'card-shine';
-                card.appendChild(shine);
-            }
-
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = ((centerY - y) / centerY) * 9; // Limit rotation to max 9deg
-                const rotateY = ((x - centerX) / centerX) * 9; 
-                
-                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
-                card.style.setProperty('--shine-x', `${(x / rect.width) * 100}%`);
-                card.style.setProperty('--shine-y', `${(y / rect.height) * 100}%`);
-                card.style.setProperty('--shine-opacity', '1');
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0) scale(1)';
-                card.style.setProperty('--shine-opacity', '0');
-            });
+        // B. Intentional depth without pointer-chasing effects.
+        document.querySelectorAll('.glass-card-strong, .role-card, .course-card, .stat-card').forEach(card => {
+            card.classList.add('depth-lift');
         });
 
         // C. Scroll-Driven Reading Progress Bar

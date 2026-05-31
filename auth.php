@@ -134,6 +134,20 @@ if ($action === 'register') {
 
     $pdo = db();
 
+    $dept_id = (int)($_POST['department_id'] ?? 0);
+    $deptStmt = $pdo->prepare('SELECT id, name, level_offered FROM departments WHERE id = ? LIMIT 1');
+    $deptStmt->execute([$dept_id]);
+    $department = $deptStmt->fetch();
+    if (!$department) {
+        $errors[] = 'department_required';
+    } elseif ($role === 'student' && $department['level_offered'] === 'ND ONLY' && $level_id > 2) {
+        $errors[] = 'hnd_not_available';
+    }
+
+    if ($errors) {
+        redirect('/register.php?error=' . implode(',', $errors));
+    }
+
     // Check duplicate email
     $check = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
     $check->execute([$email]);
@@ -175,11 +189,9 @@ if ($action === 'register') {
             $pdo->prepare('UPDATE authorized_matric_numbers SET is_used = 1 WHERE matric_number = ?')
                 ->execute([$matric_number]);
 
-            $dept_id = (int)($_POST['department_id'] ?? 1);
             $pdo->prepare('INSERT INTO student_profiles (user_id, matric_number, level_id, department_id) VALUES (?, ?, ?, ?)')
                 ->execute([$userId, $matric_number, $level_id, $dept_id]);
         } elseif ($role === 'lecturer') {
-            $dept_id = (int)($_POST['department_id'] ?? 1); // Default primary department CS
             $pdo->prepare('INSERT INTO lecturer_profiles (user_id, primary_department_id) VALUES (?, ?)')
                 ->execute([$userId, $dept_id]);
         }
@@ -192,7 +204,7 @@ if ($action === 'register') {
         $pdo->commit();
 
         if ($role === 'lecturer') {
-            redirect('/index.php?msg=pending_approval');
+            redirect('/index.php?msg=registered');
         } else {
             // Auto-login student
             session_regenerate_id(true);

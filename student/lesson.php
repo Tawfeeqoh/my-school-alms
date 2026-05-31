@@ -163,13 +163,21 @@ $pageTitle = 'Lesson Player: ' . ($lessonData['title'] ?? 'Outline');
                                 $body = $lessonData['content_deep'];
                             }
 
-                            // Simple markdown parses for paragraphs/headers
-                            $parsedBody = nl2br(htmlspecialchars($body));
-                            // Simple text replacements for layout lookups
-                            $parsedBody = str_replace('### ', '<h4 style="font-size:1.125rem; font-weight:700; margin-top:20px; margin-bottom:8px;">', $parsedBody);
-                            $parsedBody = str_replace('## ', '<h3 style="font-size:1.25rem; font-weight:700; margin-top:24px; margin-bottom:12px;">', $parsedBody);
-                            
-                            echo $parsedBody;
+                            $lines = preg_split('/\R/', $body);
+                            foreach ($lines as $line) {
+                                $line = rtrim($line);
+                                if ($line === '') {
+                                    echo '<br>';
+                                    continue;
+                                }
+                                if (str_starts_with($line, '### ')) {
+                                    echo '<h4 style="font-size:1.125rem; font-weight:700; margin-top:20px; margin-bottom:8px;">' . htmlspecialchars(substr($line, 4)) . '</h4>';
+                                } elseif (str_starts_with($line, '## ')) {
+                                    echo '<h3 style="font-size:1.25rem; font-weight:700; margin-top:24px; margin-bottom:12px;">' . htmlspecialchars(substr($line, 3)) . '</h3>';
+                                } else {
+                                    echo '<p style="margin-bottom:10px;">' . htmlspecialchars($line) . '</p>';
+                                }
+                            }
                             ?>
                         </div>
                     </div>

@@ -68,36 +68,50 @@ $assignmentsStmt = $db->prepare("
 $assignmentsStmt->execute([$_SESSION['user_id'], $profile['department_id'], $level_name]);
 $assignments = $assignmentsStmt->fetchAll();
 
-// 5. Generate mock/real attendance records
+// 5. Fetch assessment average and attendance records when the module exists.
+$assessmentStmt = $db->prepare("SELECT AVG(percentage) AS avg_pct FROM quiz_attempts WHERE student_id = ?");
+$assessmentStmt->execute([$_SESSION['user_id']]);
+$assessmentAverage = $assessmentStmt->fetch()['avg_pct'] ?? null;
+$assessmentAverage = $assessmentAverage !== null ? round((float)$assessmentAverage) : null;
+
 $today = (int)date('d');
 $daysInMonth = (int)date('t');
-$startOfWeek = (int)date('w', strtotime(date('Y-m-01'))); // 0 = Sunday, 6 = Saturday
-
-// Simulating attendance values: 80% present, 5% excused, 10% absent, 5% future
+$startOfWeek = (int)date('w', strtotime(date('Y-m-01')));
 $attendanceSummary = ['present' => 0, 'excused' => 0, 'absent' => 0];
 $attendanceDays = [];
-for ($day = 1; $day <= $daysInMonth; $day++) {
-    if ($day > $today) {
-        $status = 'future';
-    } else {
-        // Pseudo-random but stable status per day for demonstration
-        $seed = ($day * 13) % 100;
-        if ($seed < 82) {
-            $status = 'present';
-            $attendanceSummary['present']++;
-        } elseif ($seed < 90) {
-            $status = 'excused';
-            $attendanceSummary['excused']++;
-        } else {
-            $status = 'absent';
-            $attendanceSummary['absent']++;
+$attendanceConnected = false;
+
+try {
+    $attendanceStmt = $db->prepare("
+        SELECT DAY(recorded_on) AS day_num, status
+        FROM attendance_records
+        WHERE student_id = ?
+          AND recorded_on >= DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01')
+          AND recorded_on <= LAST_DAY(CURRENT_DATE())
+    ");
+    $attendanceStmt->execute([$_SESSION['user_id']]);
+    foreach ($attendanceStmt->fetchAll() as $row) {
+        $status = $row['status'];
+        $day = (int)$row['day_num'];
+        if (isset($attendanceSummary[$status])) {
+            $attendanceSummary[$status]++;
+            $attendanceDays[$day] = $status;
+            $attendanceConnected = true;
         }
     }
-    $attendanceDays[$day] = $status;
+} catch (PDOException $e) {
+    $attendanceConnected = false;
 }
-$attendancePercentage = ($attendanceSummary['present'] + $attendanceSummary['absent']) > 0 
-    ? round(($attendanceSummary['present'] / ($attendanceSummary['present'] + $attendanceSummary['absent'])) * 100) 
-    : 100;
+
+for ($day = 1; $day <= $daysInMonth; $day++) {
+    if (!isset($attendanceDays[$day])) {
+        $attendanceDays[$day] = $day > $today ? 'future' : 'unrecorded';
+    }
+}
+
+$attendancePercentage = ($attendanceSummary['present'] + $attendanceSummary['absent']) > 0
+    ? round(($attendanceSummary['present'] / ($attendanceSummary['present'] + $attendanceSummary['absent'])) * 100)
+    : null;
 
 // Page config
 $pageTitle = 'Student Command Center';
@@ -190,7 +204,7 @@ $pageTitle = 'Student Command Center';
                     </svg>
                 </div>
                 <div>
-                    <div class="stat-card-value font-mono-data"><?= $attendancePercentage ?>%</div>
+                    <div class="stat-card-value font-mono-data"><?= $attendancePercentage !== null ? $attendancePercentage . '%' : 'N/A' ?></div>
                     <div class="stat-card-label">Attendance Pulse</div>
                 </div>
             </div>
@@ -202,8 +216,8 @@ $pageTitle = 'Student Command Center';
                     </svg>
                 </div>
                 <div>
-                    <div class="stat-card-value font-mono-data">3.82</div>
-                    <div class="stat-card-label">Academic CGPA</div>
+                    <div class="stat-card-value font-mono-data"><?= $assessmentAverage !== null ? $assessmentAverage . '%' : 'N/A' ?></div>
+                    <div class="stat-card-label">Assessment Avg</div>
                 </div>
             </div>
         </div>
@@ -298,6 +312,10 @@ $pageTitle = 'Student Command Center';
                         <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0;">Attendance Pulse</h3>
                         <span class="text-xs font-mono-data text-muted"><?= date('F Y') ?></span>
                     </div>
+
+                    <?php if (!$attendanceConnected): ?>
+                        <p class="text-muted" style="font-size:0.8125rem; margin-bottom:var(--sp-4);">Attendance records have not been connected for this month yet.</p>
+                    <?php endif; ?>
 
                     <div class="attendance-grid">
                         <!-- Headers -->

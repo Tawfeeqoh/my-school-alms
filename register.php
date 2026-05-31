@@ -13,39 +13,34 @@ if (isAuthenticated()) {
 $db = db();
 $depts = [];
 try {
-    $stmt = $db->query("SELECT id, name FROM departments ORDER BY name ASC");
+    $stmt = $db->query("SELECT id, name, level_offered FROM departments ORDER BY name ASC");
     $depts = $stmt->fetchAll();
 } catch (PDOException $e) {
-    // Fallback if DB query fails during migration setup
-    $depts = [
-        ['id' => 1, 'name' => 'Animal Health'],
-        ['id' => 2, 'name' => 'Agricultural Extension'],
-        ['id' => 3, 'name' => 'Fisheries'],
-        ['id' => 4, 'name' => 'Science Laboratory Technology'],
-        ['id' => 5, 'name' => 'Computer Science'],
-        ['id' => 6, 'name' => 'Animal Production'],
-        ['id' => 7, 'name' => 'Statistics'],
-        ['id' => 8, 'name' => 'Physics'],
-        ['id' => 9, 'name' => 'Veterinary'],
-        ['id' => 10, 'name' => 'SWD'],
-        ['id' => 11, 'name' => 'NCC'],
-    ];
+    $depts = canonicalDepartments();
 }
 
 $error = $_GET['error'] ?? '';
+$errorLabels = [
+    'name_required' => 'First name and last name are required.',
+    'invalid_email' => 'Please enter a valid email address.',
+    'password_short' => 'Password must be at least 8 characters.',
+    'password_mismatch' => 'Passwords do not match.',
+    'password_weak' => 'Password must include an uppercase letter and a number.',
+    'invalid_role' => 'Please choose a valid account role.',
+    'level_required' => 'Please select your study level.',
+    'matric_required' => 'Matriculation number is required for student accounts.',
+    'department_required' => 'Please select a department.',
+    'hnd_not_available' => 'The selected department currently supports ND levels only.',
+    'email_exists' => 'An account with this email address already exists.',
+    'unauthorized_matric' => 'Your matriculation number is not registered on the authorized student list.',
+    'matric_already_used' => 'This matriculation number has already been used.',
+    'server_error' => 'Registration could not be completed. Please try again.',
+];
 $error_msg = '';
-if ($error === 'matric_not_authorized') {
-    $error_msg = 'Your matriculation number is not registered on the authorized student list.';
-} elseif ($error === 'email_exists') {
-    $error_msg = 'An account with this email address already exists.';
-} elseif ($error === 'matric_exists') {
-    $error_msg = 'An account with this matriculation number already exists.';
-} elseif ($error === 'password_mismatch') {
-    $error_msg = 'Passwords do not match.';
-} elseif ($error === 'db_error') {
-    $error_msg = 'Database insertion failed. Please try again.';
-} elseif ($error === 'invalid_fields') {
-    $error_msg = 'One or more fields contain invalid data.';
+if ($error) {
+    $parts = array_filter(explode(',', $error));
+    $messages = array_map(fn($key) => $errorLabels[$key] ?? 'One or more fields contain invalid data.', $parts);
+    $error_msg = implode(' ', array_unique($messages));
 }
 ?>
 <!DOCTYPE html>
@@ -117,7 +112,7 @@ if ($error === 'matric_not_authorized') {
                 </div>
             </div>
             <div style="text-align: center;">
-                <p class="text-secondary style="font-size: 0.875rem;">Already have an account? <a href="/index.php" style="font-weight: 600;">Sign in</a></p>
+                <p class="text-secondary" style="font-size: 0.875rem;">Already have an account? <a href="/index.php" style="font-weight: 600;">Sign in</a></p>
             </div>
         </div>
 
@@ -161,7 +156,7 @@ if ($error === 'matric_not_authorized') {
                             <select id="s-dept" name="department_id" class="input-field">
                                 <option value="">Select Department</option>
                                 <?php foreach ($depts as $d): ?>
-                                    <option value="<?= $d['id'] ?>"><?= htmlspecialchars($d['name']) ?></option>
+                                    <option value="<?= $d['id'] ?>" data-levels="<?= htmlspecialchars($d['level_offered'] ?? 'ND & HND') ?>"><?= htmlspecialchars($d['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -219,7 +214,7 @@ if ($error === 'matric_not_authorized') {
                             <select id="l-dept" name="department_id" class="input-field">
                                 <option value="">Select Primary Department</option>
                                 <?php foreach ($depts as $d): ?>
-                                    <option value="<?= $d['id'] ?>"><?= htmlspecialchars($d['name']) ?></option>
+                                    <option value="<?= $d['id'] ?>" data-levels="<?= htmlspecialchars($d['level_offered'] ?? 'ND & HND') ?>"><?= htmlspecialchars($d['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -427,8 +422,6 @@ if ($error === 'matric_not_authorized') {
             let nodes = [];
             const nodeCount = 45;
             const maxDistance = 110;
-            let mouseX = -1000;
-            let mouseY = -1000;
 
             function resizeSynapseCanvas() {
                 synapseCanvas.width = window.innerWidth;
@@ -451,15 +444,6 @@ if ($error === 'matric_not_authorized') {
 
                     if (this.x < 0 || this.x > synapseCanvas.width) this.vx *= -1;
                     if (this.y < 0 || this.y > synapseCanvas.height) this.vy *= -1;
-
-                    // Subtle mouse pull
-                    const dx = mouseX - this.x;
-                    const dy = mouseY - this.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        this.x += dx * 0.008;
-                        this.y += dy * 0.008;
-                    }
                 }
                 draw() {
                     ctx.beginPath();
@@ -472,15 +456,6 @@ if ($error === 'matric_not_authorized') {
             for (let i = 0; i < nodeCount; i++) {
                 nodes.push(new SynapseNode());
             }
-
-            window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-            window.addEventListener('mouseleave', () => {
-                mouseX = -1000;
-                mouseY = -1000;
-            });
 
             function animateSynapse() {
                 ctx.clearRect(0, 0, synapseCanvas.width, synapseCanvas.height);

@@ -139,6 +139,14 @@ a {
   transition: color var(--duration-fast) ease;
 }
 a:hover { color: var(--clr-primary-hover); }
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--clr-primary-glow);
+  outline-offset: 3px;
+}
 
 img, video, svg {
   display: block;

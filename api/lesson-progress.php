@@ -2,20 +2,19 @@
 // ============================================================
 // ALMS — Save Lesson Progress / Unlock Modules
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $lesson_id = (int)($input['lesson_id'] ?? 0);
 
 if ($lesson_id <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Invalid lesson ID.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid lesson ID.'], 422);
 }
 
 $db = db();
@@ -45,11 +44,12 @@ try {
         }
     }
 
-    echo json_encode([
+    apiJson([
         'success' => true,
         'message' => 'Lesson marked as completed.',
         'next_lesson_id' => $next_lesson_id
     ]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    error_log('Lesson progress error: ' . $e->getMessage());
+    apiJson(['success' => false, 'message' => 'Could not save lesson progress.'], 500);
 }

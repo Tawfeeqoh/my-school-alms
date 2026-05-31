@@ -2,22 +2,21 @@
 // ============================================================
 // ALMS — Update Student Pacing Endpoint
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
 // Read JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $pace = strtolower(trim($input['pace'] ?? 'standard'));
 
 // Validate
 if (!in_array($pace, ['express', 'standard', 'deep'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid pace. Options: express, standard, deep.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid pace. Options: express, standard, deep.'], 422);
 }
 
 $db = db();
@@ -28,7 +27,8 @@ try {
 
     $_SESSION['current_pace'] = $pace;
 
-    echo json_encode(['success' => true, 'message' => 'Study pacing updated successfully.', 'pace' => $pace]);
+    apiJson(['success' => true, 'message' => 'Study pacing updated successfully.', 'pace' => $pace]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    error_log('Lesson pace error: ' . $e->getMessage());
+    apiJson(['success' => false, 'message' => 'Could not update study pacing.'], 500);
 }

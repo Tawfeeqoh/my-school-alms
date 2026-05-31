@@ -80,6 +80,7 @@
 .attendance-dot.present  { background: var(--clr-text); color: #FFFFFF; }
 .attendance-dot.excused  { background: var(--clr-warning-light); color: var(--clr-warning); }
 .attendance-dot.absent   { background: transparent; border: 2px solid var(--clr-border); color: var(--clr-text-muted); }
+.attendance-dot.unrecorded { background: var(--clr-bg); color: var(--clr-text-muted); opacity: 0.55; }
 .attendance-dot.future   { background: var(--clr-bg); color: var(--clr-text-muted); }
 .attendance-dot.today    { box-shadow: 0 0 0 3px var(--clr-primary-glow); border: 2px solid var(--clr-primary); }
 .attendance-dot.header   { background: transparent; color: var(--clr-text-muted); font-weight: 700; font-size: 0.625rem; text-transform: uppercase; }
@@ -276,6 +277,10 @@
 .tag-vark-auditory   { background: #FCE7F3; color: #DB2777; }
 .tag-vark-reading    { background: #DBEAFE; color: #2563EB; }
 .tag-vark-kinesthetic { background: #D1FAE5; color: #059669; }
+.tag-vark-v          { background: #EDE9FE; color: #7C3AED; }
+.tag-vark-a          { background: #FCE7F3; color: #DB2777; }
+.tag-vark-r          { background: #DBEAFE; color: #2563EB; }
+.tag-vark-k          { background: #D1FAE5; color: #059669; }
 .tag-pace-express    { background: #FEF3C7; color: #D97706; }
 .tag-pace-standard   { background: #DBEAFE; color: #2563EB; }
 .tag-pace-deep       { background: #EDE9FE; color: #7C3AED; }
@@ -559,28 +564,13 @@
   opacity: 1;
 }
 
-/* 3D Glassmorphic Mouse Tilt Effect */
-.tilt-card {
-  perspective: 1200px;
-  transform-style: preserve-3d;
-  transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
-  will-change: transform;
-  position: relative;
+/* Premium depth lift without cursor-chasing motion */
+.depth-lift {
+  transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
 }
-.tilt-inner {
-  transform: translateZ(30px);
-  transform-style: preserve-3d;
-}
-.card-shine {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 255, 255, 0.18) 0%, transparent 60%);
-  z-index: 10;
-  mix-blend-mode: overlay;
-  opacity: var(--shine-opacity, 0);
-  transition: opacity 0.3s ease;
+.depth-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
 /* Reading Progress Bar (Scroll-Driven) */
@@ -597,4 +587,3 @@
   box-shadow: 0 1px 8px var(--clr-primary-glow);
   animation: shimmer 2s infinite linear;
 }
-

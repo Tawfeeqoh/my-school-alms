@@ -2,21 +2,20 @@
 // ============================================================
 // ALMS — Quiz Score Submission API
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $quiz_id = (int)($input['quiz_id'] ?? 0);
 $answers = $input['answers'] ?? [];
 
 if ($quiz_id <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Invalid quiz ID.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid quiz ID.'], 422);
 }
 
 $db = db();
@@ -28,8 +27,7 @@ try {
     $questions = $qStmt->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC); // returns [id => [correct_option => 'A']]
 
     if (empty($questions)) {
-        echo json_encode(['success' => false, 'message' => 'No questions found for this quiz.']);
-        exit;
+        apiJson(['success' => false, 'message' => 'No questions found for this quiz.'], 404);
     }
 
     $total = count($questions);
@@ -66,7 +64,7 @@ try {
         $feedback .= "Take a deep breath and review the slides before retrying. You can do this!";
     }
 
-    echo json_encode([
+    apiJson([
         'success' => true,
         'score' => $score,
         'total' => $total,
@@ -75,5 +73,6 @@ try {
         'feedback' => $feedback
     ]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    error_log('Quiz submit error: ' . $e->getMessage());
+    apiJson(['success' => false, 'message' => 'Could not submit quiz responses.'], 500);
 }

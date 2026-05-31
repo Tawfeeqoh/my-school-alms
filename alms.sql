@@ -5,6 +5,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `notifications`;
+DROP TABLE IF EXISTS `attendance_records`;
 DROP TABLE IF EXISTS `assignment_submissions`;
 DROP TABLE IF EXISTS `assignments`;
 DROP TABLE IF EXISTS `quiz_attempts`;
@@ -36,6 +37,9 @@ CREATE TABLE `users` (
   `status` ENUM('pending', 'active', 'suspended') NOT NULL DEFAULT 'active',
   `login_attempts` INT NOT NULL DEFAULT 0,
   `locked_until` DATETIME DEFAULT NULL,
+  `reset_token` VARCHAR(255) DEFAULT NULL,
+  `reset_expiry` DATETIME DEFAULT NULL,
+  `email_verified_at` DATETIME DEFAULT NULL,
   `last_login` DATETIME DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -229,6 +233,19 @@ CREATE TABLE `notifications` (
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 19. ATTENDANCE RECORDS
+CREATE TABLE `attendance_records` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `student_id` INT NOT NULL,
+  `course_id` INT DEFAULT NULL,
+  `recorded_on` DATE NOT NULL,
+  `status` ENUM('present', 'excused', 'absent') NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE SET NULL,
+  UNIQUE KEY `idx_attendance_daily` (`student_id`, `course_id`, `recorded_on`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================
 -- SEED DATA
 -- ============================================================
@@ -296,4 +313,4 @@ INSERT INTO `users` (`email`, `password_hash`, `role`, `first_name`, `last_name`
 CREATE INDEX `idx_lecturer_approved` ON `lecturer_profiles`(`approved_at`);
 CREATE INDEX `idx_assignments_due`   ON `assignments`(`due_date`);
 CREATE INDEX `idx_notif_unread`      ON `notifications`(`user_id`, `is_read`);
-
+CREATE INDEX `idx_attendance_month`  ON `attendance_records`(`student_id`, `recorded_on`);

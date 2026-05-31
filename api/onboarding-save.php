@@ -2,32 +2,29 @@
 // ============================================================
 // ALMS — Onboarding Preferences Save Endpoint
 // ============================================================
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php';
+apiCors();
 
 if (!isAuthenticated()) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Unauthorized access.'], 401);
 }
+verifyCsrfFromRequest();
 
 // Read JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$input = readJsonInput();
 $who5_score = (int)($input['who5_score'] ?? 0);
 $vark_style = strtolower(trim($input['vark_style'] ?? 'r'));
 $current_pace = strtolower(trim($input['current_pace'] ?? 'standard'));
 
 // Validate
 if ($who5_score < 0 || $who5_score > 25) {
-    echo json_encode(['success' => false, 'message' => 'Invalid wellness score.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid wellness score.'], 422);
 }
 if (!in_array($vark_style, ['v', 'a', 'r', 'k', 'vark'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid VARK profile style.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid VARK profile style.'], 422);
 }
 if (!in_array($current_pace, ['express', 'standard', 'deep'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid pacing preference.']);
-    exit;
+    apiJson(['success' => false, 'message' => 'Invalid pacing preference.'], 422);
 }
 
 $db = db();
@@ -50,7 +47,8 @@ try {
     $_SESSION['current_pace'] = $current_pace;
     $_SESSION['onboarded'] = 1;
 
-    echo json_encode(['success' => true, 'message' => 'Profile onboarding complete.']);
+    apiJson(['success' => true, 'message' => 'Profile onboarding complete.']);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    error_log('Onboarding save error: ' . $e->getMessage());
+    apiJson(['success' => false, 'message' => 'Could not save onboarding preferences.'], 500);
 }

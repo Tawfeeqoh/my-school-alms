@@ -31,7 +31,10 @@ $error_messages = [
     'session_expired' => 'Your session has expired. Please log in again.',
     'forbidden' => 'Access denied. You do not have permission to view that page.',
     'not_found' => 'The requested page was not found.',
-    'csrf_failed' => 'Security token verification failed. Please try again.'
+    'csrf_failed' => 'Security token verification failed. Please try again.',
+    'invalid_reset_request' => 'Password reset link is missing required verification details.',
+    'invalid_reset_token' => 'Password reset link is invalid or has already been used.',
+    'reset_token_expired' => 'Password reset link has expired. Please request a new one.'
 ];
 
 $success_messages = [
