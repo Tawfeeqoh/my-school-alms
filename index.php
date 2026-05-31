@@ -49,7 +49,7 @@ $display_success = $success_messages[$msg] ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALMS — Federal College of Animal Health & Production Technology, Ibadan</title>
+    <title>ALMS. Federal College of Animal Health & Production Technology, Ibadan</title>
     <meta name="description" content="Advanced Learning Management System incorporating cognitive wellness tools and adaptive learning paths.">
     <link rel="stylesheet" href="/assets/css/index.css">
     <link rel="stylesheet" href="/assets/css/components.css">
@@ -66,9 +66,7 @@ $display_success = $success_messages[$msg] ?? '';
                 FCAH&PT IB
             </a>
             <div style="display: flex; gap: 24px; align-items: center;">
-                <a href="#features" class="nav-link hide-mobile">System Features</a>
-                <a href="#departments" class="nav-link hide-mobile">Departments</a>
-                <a href="/register.php" class="btn btn-outline btn-sm">Register Portal</a>
+                <a href="/register.php" class="btn btn-outline btn-sm">Register</a>
             </div>
         </div>
     </header>
@@ -76,10 +74,10 @@ $display_success = $success_messages[$msg] ?? '';
     <!-- ── Split Hero Layout ── -->
     <main style="display: flex; flex-wrap: wrap; min-height: 100vh; padding-top: 72px;">
         
-        <!-- Left: Cinematic Scrolling Film (58%) -->
+        <!-- Left: Cinematic Scrolling Film (58%) 
         <section class="hide-mobile" style="flex: 0 0 58%; max-width: 58%; height: calc(100vh - 72px); sticky: top 72px; background: #000000; overflow: hidden; position: sticky; top: 72px;">
             <div id="hero-film-container" style="width: 100%; height: 100%;"></div>
-        </section>
+        </section>-->
 
         <!-- Right: Auth Login Interface (42% desktop, 100% mobile) -->
         <section style="flex: 1 1 42%; max-width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--sp-12) var(--sp-6); background: var(--clr-surface); min-height: calc(100vh - 72px);">
@@ -112,7 +110,7 @@ $display_success = $success_messages[$msg] ?? '';
                     <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
                     
                     <div class="input-group">
-                        <label for="login-email">Academic Email</label>
+                        <label for="login-email">Email</label>
                         <input type="email" id="login-email" name="email" required placeholder="your.name@fcahptib.edu.ng" class="input-field">
                     </div>
 
@@ -141,11 +139,11 @@ $display_success = $success_messages[$msg] ?? '';
                 </form>
 
                 <div style="margin-top: var(--sp-6); text-align: center; font-size: 0.875rem; color: var(--clr-text-secondary);">
-                    New to ALMS? <a href="/register.php" style="font-weight: 600;">Register here</a>
+                    Don't have an account? <a href="/register.php" style="font-weight: 600;">Register here</a>
                 </div>
 
                 <div style="margin-top: var(--sp-8); border-top: 1px solid var(--clr-border-light); padding-top: var(--sp-4); text-align: center;">
-                    <a href="/admin/login.php" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--clr-text-muted);">ADMINISTRATOR SECURE ENTRANCE</a>
+                    <p style="font-size: 0.8125rem; color: var(--clr-text-muted);">ALMS is a product of the Federal College of Animal Health & Production Technology, Ibadan. For support, contact <a href="mailto:
                 </div>
             </div>
         </section>
@@ -175,75 +173,9 @@ $display_success = $success_messages[$msg] ?? '';
         </div>
     </section>
 
-    <!-- ── System Features ── -->
-    <section id="features" style="padding: 80px 0;">
-        <div class="container">
-            <div style="text-align: center; max-width: 600px; margin: 0 auto 60px;">
-                <h2 style="font-size: 2.25rem; margin-bottom: 12px;" class="hero-text-cinematic">Designed for Diverse Minds</h2>
-                <p class="text-secondary">An academic hub that adapts to your learning style, tracks your cognitive health, and keeps you moving forward.</p>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">Adaptive Lesson Player</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">Switch seamlessly between Express Mode, Standard Mode, and Deep Dive depending on your assimilation speed and availability.</p>
-                </div>
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">VARK Personalization</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">Interactive content tailored specifically to Visual, Auditory, Read/Write, or Kinesthetic learning preferences.</p>
-                </div>
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">RAG Study Assistant</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">An integrated chatbot that uses your lecture notes to answer questions and aligns content with your cognitive load.</p>
-                </div>
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">Wellness Support</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">A lightweight pulse check that helps balance cognitive loads during study hours. (Note: Not a medical diagnostic tool).</p>
-                </div>
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">Attendance Tracker</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">Keep tabs on your daily presence, leaves of absence, and progress indexes on a visual monthly calendar.</p>
-                </div>
-                <div class="card-elevated">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 12px;">Secure Academic Registrar</h3>
-                    <p class="text-secondary" style="font-size: 0.875rem;">Exclusive access for registered students and verified staff members, authorized by institutional rosters.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
-    <!-- ── Academic Departments ── -->
-    <section id="departments" style="background: var(--clr-surface); padding: 80px 0; border-top: 1px solid var(--clr-border-light);">
-        <div class="container">
-            <div style="text-align: center; max-width: 600px; margin: 0 auto 60px;">
-                <h2 style="font-size: 2.25rem; margin-bottom: 12px;" class="hero-text-cinematic">11 Fields of Academic Excellence</h2>
-                <p class="text-secondary">Fully functional departments mapping ND and HND curricula at FCAH&PT Ibadan.</p>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
-                <?php
-                $depts = [
-                    'Animal Health & Production Technology',
-                    'Agricultural Technology',
-                    'Fisheries Technology',
-                    'Science Laboratory Technology',
-                    'Computer Science',
-                    'Home & Rural Economics',
-                    'Statistics',
-                    'Wildlife & Ecotourism Management',
-                    'Veterinary Technology',
-                    'Pasture & Range Management',
-                    'Agribusiness Management'
-                ];
-                foreach ($depts as $d):
-                ?>
-                <div style="padding: 20px; border-radius: 12px; background: var(--clr-bg); border: 1px solid var(--clr-border-light); font-weight: 600; font-size: 0.9375rem; text-align: center;">
-                    <?= htmlspecialchars($d) ?>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- ── Public Footer ── -->
     <footer style="background: #000000; color: #FFFFFF; padding: 60px 0; font-size: 0.875rem;">
@@ -254,24 +186,9 @@ $display_success = $success_messages[$msg] ?? '';
                 </a>
                 <p style="margin-top: 12px; color: var(--clr-text-muted); max-width: 280px;">Federal College of Animal Health & Production Technology, Ibadan, Nigeria.</p>
             </div>
-            <div>
-                <h4 style="color: #FFFFFF; font-size: 1rem; margin-bottom: 16px;">Resources</h4>
-                <ul style="display: flex; flex-direction: column; gap: 8px;">
-                    <li><a href="#features" style="color: var(--clr-text-muted);">Features</a></li>
-                    <li><a href="#departments" style="color: var(--clr-text-muted);">Departments</a></li>
-                    <li><a href="/register.php" style="color: var(--clr-text-muted);">Student Registration</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 style="color: #FFFFFF; font-size: 1rem; margin-bottom: 16px;">Security</h4>
-                <ul style="display: flex; flex-direction: column; gap: 8px;">
-                    <li><a href="/admin/login.php" style="color: var(--clr-text-muted);">Admin Portal</a></li>
-                    <li><a href="/forgot-password.php" style="color: var(--clr-text-muted);">Reset Password</a></li>
-                </ul>
-            </div>
         </div>
         <div class="container" style="margin-top: 40px; border-top: 1px solid #222; padding-top: 20px; text-align: center; color: var(--clr-text-muted); font-size: 0.75rem;">
-            &copy; <?= date('Y') ?> Advanced Learning Management System (ALMS). All rights reserved. Built for FCAH&PT Ibadan.
+            &copy; <?= date('Y') ?> Advanced Learning Management System (ALMS). All rights reserved FCAH&PT Ibadan.
         </div>
     </footer>
 

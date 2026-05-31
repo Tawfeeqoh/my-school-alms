@@ -18,17 +18,17 @@ try {
 } catch (PDOException $e) {
     // Fallback if DB query fails during migration setup
     $depts = [
-        ['id' => 1, 'name' => 'Animal Health & Production Technology'],
-        ['id' => 2, 'name' => 'Agricultural Technology'],
-        ['id' => 3, 'name' => 'Fisheries Technology'],
+        ['id' => 1, 'name' => 'Animal Health'],
+        ['id' => 2, 'name' => 'Agricultural Extension'],
+        ['id' => 3, 'name' => 'Fisheries'],
         ['id' => 4, 'name' => 'Science Laboratory Technology'],
         ['id' => 5, 'name' => 'Computer Science'],
-        ['id' => 6, 'name' => 'Home & Rural Economics'],
+        ['id' => 6, 'name' => 'Animal Production'],
         ['id' => 7, 'name' => 'Statistics'],
-        ['id' => 8, 'name' => 'Wildlife & Ecotourism Management'],
-        ['id' => 9, 'name' => 'Veterinary Technology'],
-        ['id' => 10, 'name' => 'Pasture & Range Management'],
-        ['id' => 11, 'name' => 'Agribusiness Management']
+        ['id' => 8, 'name' => 'Physics'],
+        ['id' => 9, 'name' => 'Veterinary'],
+        ['id' => 10, 'name' => 'SWD'],
+        ['id' => 11, 'name' => 'NCC'],
     ];
 }
 
@@ -53,7 +53,7 @@ if ($error === 'matric_not_authorized') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Portal — ALMS</title>
+    <title>Register — ALMS</title>
     <link rel="stylesheet" href="/assets/css/index.css">
     <link rel="stylesheet" href="/assets/css/components.css">
     <style>
@@ -193,8 +193,8 @@ if ($error === 'matric_not_authorized') {
                             <input type="text" id="l-last-name" name="last_name" placeholder="Adegoke" class="input-field">
                         </div>
                         <div class="input-group">
-                            <label for="l-email">Academic Email</label>
-                            <input type="email" id="l-email" name="email" placeholder="t.adegoke@fcahptib.edu.ng" class="input-field">
+                            <label for="l-email">Email</label>
+                            <input type="email" id="l-email" name="email" placeholder="t.adegoke@gmail.cominput-field">
                         </div>
                     </div>
                 </div>

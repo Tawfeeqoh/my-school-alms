@@ -4,9 +4,9 @@
 // InfinityFree / cPanel compatible
 // ============================================================
 
-define('DB_HOST', 'sql102.infinityfree.com');   // ← change to your InfinityFree MySQL host
-define('DB_NAME', 'if0_41958529_fcahptibalms'); // ← your DB name from the schema
-define('DB_USER', 'if0_41958529');                // ← your cPanel DB username
+define('DB_HOST', 'sql102.infinityfree.comur InfinityFree MySQL host
+define('DB_NAME', 'if0_41958528_fcahptibalms'); // ← your DB name from the schema
+define('DB_USER', 'if0_41958528');                // ← your cPanel DB username
 define('DB_PASS', 'qH4OLN9mHQ');                            // ← your cPanel DB password
 
 define('SITE_URL', 'https://fcahptibalms.great-site.net'); // ← your domain
@@ -19,6 +19,10 @@ ini_set('session.cookie_samesite', 'Lax');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+function isAuthenticated(): bool {
+    return !empty($_SESSION['user_id']);
 }
 
 // PDO connection
