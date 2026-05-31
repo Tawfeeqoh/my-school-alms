@@ -4,10 +4,10 @@
 // InfinityFree / cPanel compatible
 // ============================================================
 
-define('DB_HOST', 'sql102.infinityfree.com'); // ← InfinityFree MySQL host
-define('DB_NAME', 'if0_41958528_fcahptibalms'); // ← your DB name from the schema
-define('DB_USER', 'if0_41958528');                // ← your cPanel DB username
-define('DB_PASS', 'qH4OLN9mHQ');                            // ← your cPanel DB password
+define('DB_HOST', 'sql102.infinityfree.com');
+define('DB_NAME', 'if0_41958528_fcahptibalms');
+define('DB_USER', 'if0_41958528');
+define('DB_PASS', 'qH4OLN9mHQ');
 
 define('SITE_URL', 'https://fcahptibalms.great-site.net'); // ← your domain
 define('SITE_NAME', 'ALMS — FCAH&PT Ibadan');

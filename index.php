@@ -81,73 +81,64 @@ $display_success = $success_messages[$msg] ?? '';
 
         <!-- Right: Auth Login Interface (42% desktop, 100% mobile) -->
         <section style="flex: 1 1 42%; max-width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--sp-12) var(--sp-6); background: var(--clr-surface); min-height: calc(100vh - 72px);">
-            <div style="width: 100%; max-width: 400px;">
-                <div style="margin-bottom: var(--sp-8); text-align: center;">
-                    <h1 class="hero-text-cinematic" style="font-size: 2.25rem; margin-bottom: var(--sp-2);">Welcome Back</h1>
-                    <p class="text-secondary" style="font-size: 0.9375rem;">Access your academic command center</p>
-                </div>
-
-                <?php if ($display_error): ?>
-                    <div class="flash-msg error">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <span><?= htmlspecialchars($display_error) ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($display_success): ?>
-                    <div class="flash-msg success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span><?= htmlspecialchars($display_success) ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Login Form -->
-                <form action="/auth.php?action=login" method="POST" style="display: flex; flex-direction: column; gap: var(--sp-4);">
-                    <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
-                    
-                    <div class="input-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" name="email" required placeholder="your.name@fcahptib.edu.ng" class="input-field">
-                    </div>
-
-                    <div class="input-group">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <label for="login-password">Password</label>
-                            <a href="/forgot-password.php" style="font-size: 0.8125rem;">Forgot Password?</a>
-                        </div>
-                        <div class="input-password-wrap">
-                            <input type="password" id="login-password" name="password" required class="input-field">
-                            <button type="button" class="toggle-pw" aria-label="Toggle Password Visibility">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="login-remember" name="remember" style="accent-color: var(--clr-primary);">
-                        <label for="login-remember" style="font-size: 0.875rem; color: var(--clr-text-secondary); cursor: pointer; user-select: none;">Remember me for 30 days</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-full" style="margin-top: var(--sp-2);">Sign In</button>
-                </form>
-
-                <div style="margin-top: var(--sp-6); text-align: center; font-size: 0.875rem; color: var(--clr-text-secondary);">
-                    Don't have an account? <a href="/register.php" style="font-weight: 600;">Register here</a>
-                </div>
-
-                <div style="margin-top: var(--sp-8); border-top: 1px solid var(--clr-border-light); padding-top: var(--sp-4); text-align: center; display: flex; flex-direction: column; gap: var(--sp-2);">
-                    <p style="font-size: 0.8125rem; color: var(--clr-text-muted); margin-bottom: 0;">ALMS is a product of the Federal College of Animal Health & Production Technology, Ibadan. For support, contact <a href="mailto:support@fcahptib.edu.ng">support@fcahptib.edu.ng</a>.</p>
-                    <div>
-                        <a href="/admin/login.php" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--clr-text-muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Administrator Secure Entrance</a>
-                    </div>
-                </div>
+     <div class="glass-card-strong tilt-card" style="width: 100%; max-width: 400px; margin: 0 auto; padding: var(--sp-8); border-radius: var(--radius-2xl); backdrop-filter: blur(12px); background: rgba(255,255,255,0.15); box-shadow: var(--shadow-lg);">
+    <div style="margin-bottom: var(--sp-8); text-align: center;">
+        <h1 class="hero-text-cinematic" style="font-size: 2.25rem; margin-bottom: var(--sp-2);">Welcome Back</h1>
+        <p class="text-secondary" style="font-size: 0.9375rem;">Access your academic command center</p>
+    </div>
+    <?php if ($display_error): ?>
+        <div class="flash-msg error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span><?= htmlspecialchars($display_error) ?></span>
+        </div>
+    <?php endif; ?>
+    <?php if ($display_success): ?>
+        <div class="flash-msg success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span><?= htmlspecialchars($display_success) ?></span>
+        </div>
+    <?php endif; ?>
+    <form action="/auth.php?action=login" method="POST" style="display: flex; flex-direction: column; gap: var(--sp-4);">
+        <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>">
+        <div class="input-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" name="email" required placeholder="your.name@fcahptib.edu.ng" class="input-field">
+        </div>
+        <div class="input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="login-password">Password</label>
+                <a href="/forgot-password.php" class="btn btn-ghost btn-sm">Forgot Password?</a>
+            </div>
+            <div class="input-password-wrap">
+                <input type="password" id="login-password" name="password" required class="input-field">
+                <button type="button" class="toggle-pw" aria-label="Toggle Password Visibility">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="login-remember" name="remember" style="accent-color: var(--clr-primary);">
+            <label for="login-remember" style="font-size: 0.875rem; color: var(--clr-text-secondary); cursor: pointer; user-select: none;">Remember me for 30 days</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top: var(--sp-2);">Sign In</button>
+    </form>
+    <div style="margin-top: var(--sp-6); text-align: center; font-size: 0.875rem; color: var(--clr-text-secondary);">
+        Don't have an account? <a href="/register.php" class="btn btn-outline btn-sm">Register here</a>
+    </div>
+    <div style="margin-top: var(--sp-8); border-top: 1px solid var(--clr-border-light); padding-top: var(--sp-4); text-align: center; display: flex; flex-direction: column; gap: var(--sp-2);">
+        <p style="font-size: 0.8125rem; color: var(--clr-text-muted); margin-bottom: 0;">ALMS is a product of the Federal College of Animal Health & Production Technology, Ibadan. For support, contact <a href="mailto:support@fcahptib.edu.ng" class="btn btn-ghost btn-xs">support@fcahptib.edu.ng</a>.</p>
+        <div>
+            <a href="/admin/login.php" class="btn btn-ghost btn-xs" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--clr-text-muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Administrator Secure Entrance</a>
+        </div>
+    </div>
+</div>            </div>
             </div>
         </section>
     </main>
