@@ -286,3 +286,14 @@ INSERT INTO `lessons` (`course_id`, `title`, `content_standard`, `content_expres
 -- Hash generated using PASSWORD_BCRYPT (Cost: 12)
 INSERT INTO `users` (`email`, `password_hash`, `role`, `first_name`, `last_name`, `title`, `status`) VALUES
 ('admin@fcahptib.edu.ng', '$2y$12$Z0D/Uf7W1sP.7d9T5p9d7OjWjT3400jPqT.qW51.t7V63Q9v3S40O', 'admin', 'System', 'Administrator', 'Admin', 'active');
+
+-- ============================================================
+-- SECTION 10: OPTIMIZED INDEXES
+-- ============================================================
+-- Redundant indexes on UNIQUE columns (like email or matric_number) are omitted
+-- as MySQL automatically indexes them for maximum lookup efficiency.
+
+CREATE INDEX `idx_lecturer_approved` ON `lecturer_profiles`(`approved_at`);
+CREATE INDEX `idx_assignments_due`   ON `assignments`(`due_date`);
+CREATE INDEX `idx_notif_unread`      ON `notifications`(`user_id`, `is_read`);
+
