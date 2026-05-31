@@ -138,8 +138,7 @@ $display_success = $success_messages[$msg] ?? '';
             <a href="/admin/login.php" class="btn btn-ghost btn-xs" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--clr-text-muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Administrator Secure Entrance</a>
         </div>
     </div>
-</div>            </div>
-            </div>
+</div>
         </section>
     </main>
 
