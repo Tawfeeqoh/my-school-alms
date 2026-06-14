@@ -25,6 +25,10 @@ RewriteEngine On
 # Prevent directory listing
 Options -Indexes
 
+# Redirect old PHP views to HTML equivalents (excluding /api/)
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)\.php$ /$1.html [R=301,L]
+
 # Custom error pages
-ErrorDocument 403 /index.php?error=forbidden
-ErrorDocument 404 /index.php?error=not_found
+ErrorDocument 403 /index.html?error=forbidden
+ErrorDocument 404 /index.html?error=not_found

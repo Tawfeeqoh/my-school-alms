@@ -3,6 +3,7 @@
 // ALMS — Save Lesson Progress / Unlock Modules
 // ============================================================
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/learning-engine.php';
 apiCors();
 
 if (!isAuthenticated()) {
@@ -23,6 +24,9 @@ try {
     // 1. Mark lesson as complete (ignore if already done)
     $stmt = $db->prepare("INSERT IGNORE INTO lesson_progress (student_id, lesson_id) VALUES (?, ?)");
     $stmt->execute([$_SESSION['user_id'], $lesson_id]);
+    if ($stmt->rowCount() > 0) {
+        awardXp((int)$_SESSION['user_id'], 25, 'lesson_complete', $lesson_id, 'Lesson module completed');
+    }
 
     // 2. Fetch current course_id and sequence of this lesson
     $lessonInfo = $db->prepare("SELECT course_id, sequence_order FROM lessons WHERE id = ?");

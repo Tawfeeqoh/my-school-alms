@@ -3,6 +3,7 @@
 // ALMS — Quiz Score Submission API
 // ============================================================
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/learning-engine.php';
 apiCors();
 
 if (!isAuthenticated()) {
@@ -55,6 +56,12 @@ try {
         VALUES (?, ?, ?, ?, ?)
     ");
     $attempt->execute([$quiz_id, $_SESSION['user_id'], $score, $percentage, $passed]);
+    $attemptId = (int)$db->lastInsertId();
+
+    $xp = $passed ? 50 : 20;
+    if ($percentage >= 80) $xp += 25;
+    awardXp((int)$_SESSION['user_id'], $xp, 'quiz_attempt', $attemptId, 'Quiz attempt completed');
+    generateQuizRecommendation((int)$_SESSION['user_id'], $quiz_id, $percentage);
 
     // Customize encouragement based on wellness
     $feedback = "You scored $score/$total ($percentage%). ";

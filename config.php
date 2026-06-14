@@ -16,7 +16,18 @@ define('SITE_NAME', 'ALMS - FCAH&PT Ibadan');
 // Session security
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_strict_mode', 1);
-ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_samesite', 'None');
+
+$cookieParams = session_get_cookie_params();
+session_set_cookie_params([
+    'lifetime' => $cookieParams['lifetime'],
+    'path' => $cookieParams['path'] ?: '/',
+    'domain' => $cookieParams['domain'],
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None',
+]);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

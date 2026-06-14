@@ -6,6 +6,13 @@
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `notifications`;
 DROP TABLE IF EXISTS `attendance_records`;
+DROP TABLE IF EXISTS `student_badges`;
+DROP TABLE IF EXISTS `badges`;
+DROP TABLE IF EXISTS `xp_transactions`;
+DROP TABLE IF EXISTS `gamification_profiles`;
+DROP TABLE IF EXISTS `learning_recommendations`;
+DROP TABLE IF EXISTS `engagement_events`;
+DROP TABLE IF EXISTS `portal_student_imports`;
 DROP TABLE IF EXISTS `assignment_submissions`;
 DROP TABLE IF EXISTS `assignments`;
 DROP TABLE IF EXISTS `quiz_attempts`;
@@ -22,6 +29,8 @@ DROP TABLE IF EXISTS `student_profiles`;
 DROP TABLE IF EXISTS `authorized_matric_numbers`;
 DROP TABLE IF EXISTS `courses`;
 DROP TABLE IF EXISTS `departments`;
+DROP TABLE IF EXISTS `programmes`;
+DROP TABLE IF EXISTS `faculties`;
 DROP TABLE IF EXISTS `users`;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -45,10 +54,27 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. DEPARTMENTS TABLE (The 11 specified by FCAH&PT Ibadan)
-CREATE TABLE `departments` (
+CREATE TABLE `faculties` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL UNIQUE,
-  `level_offered` ENUM('ND & HND', 'ND ONLY') NOT NULL DEFAULT 'ND & HND'
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `departments` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `faculty_id` INT DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL UNIQUE,
+  `level_offered` ENUM('ND & HND', 'ND ONLY') NOT NULL DEFAULT 'ND & HND',
+  FOREIGN KEY (`faculty_id`) REFERENCES `faculties` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `programmes` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `department_id` INT NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `award` ENUM('ND', 'HND') NOT NULL,
+  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
+  UNIQUE KEY `idx_programme` (`department_id`, `name`, `award`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3. PRE-AUTHORIZED MATRIC NUMBERS (Outsider Registration Prevention)
@@ -65,12 +91,14 @@ CREATE TABLE `student_profiles` (
   `matric_number` VARCHAR(100) UNIQUE DEFAULT NULL,
   `level_id` INT NOT NULL DEFAULT 1, -- 1 = ND I, 2 = ND II, 3 = HND I, 4 = HND II
   `department_id` INT DEFAULT NULL,
+  `programme_id` INT DEFAULT NULL,
   `who5_score` INT DEFAULT NULL,     -- raw well-being sum (0-25)
   `vark_style` VARCHAR(10) DEFAULT NULL, -- e.g. V, A, R, K, VARK
   `current_pace` ENUM('express', 'standard', 'deep') NOT NULL DEFAULT 'standard',
   `onboarded` TINYINT(1) NOT NULL DEFAULT 0,
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
+  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`programme_id`) REFERENCES `programmes` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 5. LECTURER PROFILES TABLE
@@ -99,8 +127,10 @@ CREATE TABLE `courses` (
   `course_code` VARCHAR(50) UNIQUE NOT NULL,
   `course_name` VARCHAR(255) NOT NULL,
   `department_id` INT NOT NULL,
+  `programme_id` INT DEFAULT NULL,
   `level` ENUM('ND', 'HND') NOT NULL DEFAULT 'ND',
-  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE
+  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`programme_id`) REFERENCES `programmes` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 8. LECTURER COURSE ASSIGNMENTS (Multi-Department Lecturing Mapping)
@@ -233,7 +263,90 @@ CREATE TABLE `notifications` (
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 19. ATTENDANCE RECORDS
+-- 19. RULE-BASED RECOMMENDATIONS
+CREATE TABLE `learning_recommendations` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `student_id` INT NOT NULL,
+  `course_id` INT DEFAULT NULL,
+  `type` ENUM('revise', 'review', 'advance', 'wellness', 'engagement') NOT NULL DEFAULT 'review',
+  `title` VARCHAR(255) NOT NULL,
+  `body` TEXT NOT NULL,
+  `priority` ENUM('low', 'medium', 'high') NOT NULL DEFAULT 'medium',
+  `is_resolved` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 20. GAMIFICATION
+CREATE TABLE `gamification_profiles` (
+  `student_id` INT PRIMARY KEY,
+  `total_xp` INT NOT NULL DEFAULT 0,
+  `level` INT NOT NULL DEFAULT 1,
+  `current_streak` INT NOT NULL DEFAULT 0,
+  `longest_streak` INT NOT NULL DEFAULT 0,
+  `last_activity_date` DATE DEFAULT NULL,
+  FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `xp_transactions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `student_id` INT NOT NULL,
+  `points` INT NOT NULL,
+  `source_type` VARCHAR(60) NOT NULL,
+  `source_id` INT NOT NULL DEFAULT 0,
+  `description` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  UNIQUE KEY `idx_xp_source` (`student_id`, `source_type`, `source_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `badges` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `code` VARCHAR(80) UNIQUE NOT NULL,
+  `name` VARCHAR(120) NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `student_badges` (
+  `student_id` INT NOT NULL,
+  `badge_id` INT NOT NULL,
+  `earned_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`student_id`, `badge_id`),
+  FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`badge_id`) REFERENCES `badges` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 21. ENGAGEMENT AND PORTAL PROVISIONING
+CREATE TABLE `engagement_events` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `event_type` VARCHAR(80) NOT NULL,
+  `course_id` INT DEFAULT NULL,
+  `metadata` JSON DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `portal_student_imports` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `matric_number` VARCHAR(100) UNIQUE NOT NULL,
+  `first_name` VARCHAR(100) NOT NULL,
+  `last_name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(255) DEFAULT NULL,
+  `department_id` INT DEFAULT NULL,
+  `programme_id` INT DEFAULT NULL,
+  `level_id` INT NOT NULL DEFAULT 1,
+  `provisioned_user_id` INT DEFAULT NULL,
+  `imported_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`programme_id`) REFERENCES `programmes` (`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`provisioned_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 22. ATTENDANCE RECORDS
 CREATE TABLE `attendance_records` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `student_id` INT NOT NULL,
@@ -250,19 +363,30 @@ CREATE TABLE `attendance_records` (
 -- SEED DATA
 -- ============================================================
 
+INSERT INTO `faculties` (`name`) VALUES
+('School of Animal Health and Production Technology'),
+('School of Science and Technology'),
+('School of Agricultural Extension and Fisheries');
+
 -- Seed 11 Departments
-INSERT INTO `departments` (`name`, `level_offered`) VALUES
-('Computer Science', 'ND & HND'),
-('Science Laboratory Technology', 'ND & HND'),
-('Animal Health', 'ND & HND'),
-('Animal Production', 'ND & HND'),
-('Statistics', 'ND & HND'),
-('Veterinary', 'ND & HND'),
-('Biology', 'ND & HND'),
-('Microbiology', 'ND & HND'),
-('Physics', 'ND & HND'),
-('Agricultural Extension', 'ND ONLY'),
-('Fishery', 'ND ONLY');
+INSERT INTO `departments` (`faculty_id`, `name`, `level_offered`) VALUES
+(2, 'Computer Science', 'ND & HND'),
+(2, 'Science Laboratory Technology', 'ND & HND'),
+(1, 'Animal Health', 'ND & HND'),
+(1, 'Animal Production', 'ND & HND'),
+(2, 'Statistics', 'ND & HND'),
+(1, 'Veterinary', 'ND & HND'),
+(2, 'Biology', 'ND & HND'),
+(2, 'Microbiology', 'ND & HND'),
+(2, 'Physics', 'ND & HND'),
+(3, 'Agricultural Extension', 'ND ONLY'),
+(3, 'Fishery', 'ND ONLY');
+
+INSERT INTO `programmes` (`department_id`, `name`, `award`)
+SELECT id, CONCAT(name, ' ND'), 'ND' FROM departments;
+
+INSERT INTO `programmes` (`department_id`, `name`, `award`)
+SELECT id, CONCAT(name, ' HND'), 'HND' FROM departments WHERE level_offered = 'ND & HND';
 
 -- Seed authorized matric codes to test the registration shield
 INSERT INTO `authorized_matric_numbers` (`matric_number`) VALUES
@@ -314,3 +438,5 @@ CREATE INDEX `idx_lecturer_approved` ON `lecturer_profiles`(`approved_at`);
 CREATE INDEX `idx_assignments_due`   ON `assignments`(`due_date`);
 CREATE INDEX `idx_notif_unread`      ON `notifications`(`user_id`, `is_read`);
 CREATE INDEX `idx_attendance_month`  ON `attendance_records`(`student_id`, `recorded_on`);
+CREATE INDEX `idx_recommendations`   ON `learning_recommendations`(`student_id`, `is_resolved`, `priority`);
+CREATE INDEX `idx_engagement_user`   ON `engagement_events`(`user_id`, `created_at`);

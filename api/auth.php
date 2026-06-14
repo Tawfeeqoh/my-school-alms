@@ -68,9 +68,9 @@ if ($action === 'login') {
         'success' => true,
         'message' => 'Signed in successfully.',
         'redirect' => match($user['role']) {
-            'admin' => '/admin/dashboard.php',
-            'lecturer' => '/lecturer/dashboard.php',
-            default => '/student/dashboard.php',
+            'admin' => '/admin/dashboard.html',
+            'lecturer' => '/lecturer/dashboard.html',
+            default => '/student/dashboard.html',
         },
         'user' => [
             'id' => (int)$user['id'],

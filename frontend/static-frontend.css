@@ -66,6 +66,17 @@
   padding-bottom: 48px;
 }
 
+.static-hero-grid.single {
+  grid-template-columns: minmax(0, 0.9fr);
+}
+
+.static-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
 .static-hero-visual {
   position: absolute;
   inset: 72px 0 0;
@@ -154,6 +165,33 @@
 .auth-panel.wide {
   max-width: 980px;
   margin: 0 auto;
+}
+
+.static-auth-page {
+  min-height: 100vh;
+  padding: 120px 20px 48px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(209,0,0,0.08), transparent 32%),
+    linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);
+}
+
+.static-auth-page.register {
+  display: block;
+}
+
+.static-auth-page > .auth-panel {
+  width: min(100%, 460px);
+}
+
+.static-auth-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 18px;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 .static-form,
